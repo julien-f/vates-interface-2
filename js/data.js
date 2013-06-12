@@ -1,7 +1,7 @@
-!function (){
+!function () {
 	var pools = [];
 
-	setInterval(function() {
+	setInterval(function () {
 		var pool = {
 			'label': 'Pool ' + _.random(1000),
 			'hosts': [
@@ -16,7 +16,7 @@
 		refresh(pools);
 	}, 1000);
 
-	setInterval(function() {
+	setInterval(function () {
 		pools.splice(_.random(pools.length - 1), 1);
 
 		refresh(pools);
