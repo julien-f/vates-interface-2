@@ -3,13 +3,13 @@
 
 	setInterval(function() {
 		var pool = {
-			'label': 'Pool '_.random(1000),
-			'hosts': {
+			'label': 'Pool ' + _.random(1000),
+			'hosts': [
 				{ 'label': 'Host 1' },
 				{ 'label': 'Host 2' },
 				{ 'label': 'Host 3' },
 				{ 'label': 'Host 4' },
-			}
+			]
 		};
 		pools.push(pool);
 
