@@ -2,6 +2,11 @@
 	var pools = [];
 
 	setInterval(function () {
+		if (pools.length > 20)
+		{
+			return;
+		}
+
 		var pool = {
 			'label': 'Pool ' + _.random(1000),
 			'hosts': [
