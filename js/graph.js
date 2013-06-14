@@ -6,42 +6,48 @@
 	var width  = 1000;
 
 	// mouse event vars.
-	var selected= null,
-	    mousedown = null,
-	    mouseup = null;
+	var selected  = null;
+	var mousedown = null;
+	var mouseup   = null;
 
 	// Variables de construction des cercles.
-	var centrex = 500;
-	var centrey = 500;
-	var espace = 100;
+	var r_pools  = 100;
 
 	// Create the graph.
 	var svg = d3.select('body').append('svg')
 		.attr('height', height)
 		.attr('width', width)
-		.attr("pointer-events", "all") // activate all pointers eventss
-		.append('g') // create a group to zoom.
-			.call(d3.behavior.zoom().on("zoom", redraw)) // construct an area to activate zoom and call
-	  ;
+		;
 
-	// fonction que redessine le groupe avec les propriété suivant :
-	function redraw() {
-	  svg.attr("transform",
-	      "translate(" + d3.event.translate + ")"
-	      + " scale(" + d3.event.scale + ")");
-	}
+	// Event handling.
+	var graph = svg
+
+		// Activates all pointers events.
+		.attr("pointer-events", "all")
+
+		// Creates a group to zoom.
+		.append('g')
+
+		// Reacts to appropriate events.
+		.call(d3.behavior.zoom().on("zoom", function () {
+			graph.attr(
+				"transform",
+				"translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")"
+			);
+		}))
+		;
 
 	// rectangle invisble qui permet le zoom partout.
-	svg.append('svg:rect')
-	    .attr('width', 1000 )
-	    .attr('height', 1000 )
-	    .attr('fill', 'white');
+	graph.append('rect')
+		.attr('height', height)
+		.attr('width', width)
+		.attr('fill', 'white');
 
 	window.refresh = function (pools) {
 		// d3.js selections.
-		var update = svg.selectAll('.pool').data(pools, function(d) { return d.label; });
+		var update = graph.selectAll('.pool').data(pools, function(d) { return d.label; });
 		var enter  = update.enter();
-		var exit  = update.exit();
+		var exit   = update.exit();
 
 		////////////////////////////////////////
 		// Abscisse des pools.
@@ -52,7 +58,7 @@
 
 			var angleP = 2 * Math.PI / pools.length;
 			var angle = angleP*i;
-			var x =	Math.cos(angle) * espace + centrey ;
+			var x =	Math.cos(angle) * r_pools + width/2 ;
 			return f(x);
 		};
 
@@ -64,7 +70,7 @@
 
 			var angleP = 2 * Math.PI / pools.length;
 			var angle = angleP*i;
-			var y = Math.sin(angle) * espace + centrey ;
+			var y = Math.sin(angle) * r_pools + width/2 ;
 			return f(y);
 		};
 
