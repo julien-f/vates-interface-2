@@ -1,4 +1,6 @@
 !function () {
+	'use strict';
+
 	var pools = [];
 
 	setInterval(function () {
@@ -18,12 +20,12 @@
 		};
 		pools.push(pool);
 
-		refresh(pools);
+		window.refresh(pools);
 	}, 1000);
 
 	setInterval(function () {
 		pools.splice(_.random(pools.length - 1), 1);
 
-		refresh(pools);
+		window.refresh(pools);
 	}, 1500);
 }();
