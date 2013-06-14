@@ -27,7 +27,7 @@
 		.attr("pointer-events", "all")
 		.call(d3.behavior.zoom().on("zoom", function () {
 			graph.attr(
-				"transform",²
+				"transform",
 				"translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")"
 			);
 		}))
@@ -40,6 +40,7 @@
 		var exit   = update.exit();
 
 		////////////////////////////////////////
+
 		// Abscisse des pools.
 		var cx = function (d, i) {
 			var f = d3.scale.linear()
@@ -71,11 +72,11 @@
 		////////////////////////////////////////
 		// Suppression des groupes non-utilisés.
 
-		// @todo Nice fading.
 		exit.transition()
 			.duration(50)
 			.attr("r", 5)
-		.remove();
+			.remove()
+			;
 
 		////////////////////////////////////////
 		// Création des groupes manquants.
@@ -83,7 +84,7 @@
 		// Groupe.
 		var groups = enter.append('g')
 			.attr('class', 'pool')
-			.attr('transform', 'translate('+ width/2 +', '+ height/2 +') scale(0.5)') // @todo Nicer apparation.
+			.attr('transform', 'translate('+ width/2 +', '+ height/2 +') scale(0.5)')
 			;
 
 		groups.transition() // @todo How to slow the transition down.
