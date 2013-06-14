@@ -19,29 +19,19 @@
 		.attr('width', width)
 		;
 
-	// Event handling.
-	var graph = svg
+	// Everything will be contained in a group to apply transformations.
+	var graph = svg.append('g');
 
-		// Activates all pointers events.
+	// Reacts to appropriate events.
+	svg
 		.attr("pointer-events", "all")
-
-		// Creates a group to zoom.
-		.append('g')
-
-		// Reacts to appropriate events.
 		.call(d3.behavior.zoom().on("zoom", function () {
 			graph.attr(
-				"transform",
+				"transform",²
 				"translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")"
 			);
 		}))
 		;
-
-	// rectangle invisble qui permet le zoom partout.
-	graph.append('rect')
-		.attr('height', height)
-		.attr('width', width)
-		.attr('fill', 'white');
 
 	window.refresh = function (pools) {
 		// d3.js selections.
