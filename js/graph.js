@@ -33,41 +33,46 @@
 		}))
 		;
 
+	// Abscisse des pools.
+	var pool_x = function (d, i) {
+		var angleP = 2 * Math.PI / pool_x.n;
+		var angle = angleP*i;
+		var x =	Math.cos(angle) * r_pools + width/2 ;
+
+		return pool_x.helper(x);
+	};
+	pool_x.helper = d3.scale.linear()
+		.domain([0, 1000])
+		.range([0, width])
+		;
+
+	// Ordonnée des pools.
+	var pool_y = function (d, i) {
+
+		var angleP = 2 * Math.PI / pool_y.n;
+		var angle = angleP*i;
+		var y = Math.sin(angle) * r_pools + width/2 ;
+
+		return pool_x.helper(y);
+	};
+	pool_y.helper = d3.scale.linear()
+		.domain([0, 1000])
+		.range([height, 0])
+		;
+
+	var label = function (d) {
+		return d.label;
+	}
+
 	window.refresh = function (pools) {
 		// d3.js selections.
 		var update = graph.selectAll('.pool').data(pools, function(d) { return d.label; });
 		var enter  = update.enter();
 		var exit   = update.exit();
 
-		////////////////////////////////////////
+		// Functions parametrizing.
+		pool_x.n = pool_y.n = pools.length;
 
-		// Abscisse des pools.
-		var cx = function (d, i) {
-			var f = d3.scale.linear()
-				.domain([0, 1000])
-				.range([0, width]);
-
-			var angleP = 2 * Math.PI / pools.length;
-			var angle = angleP*i;
-			var x =	Math.cos(angle) * r_pools + width/2 ;
-			return f(x);
-		};
-
-		// Ordonnée des pools.
-		var cy = function (d, i) {
-			var f = d3.scale.linear()
-				.domain([0, 1000])
-				.range([height, 0]);
-
-			var angleP = 2 * Math.PI / pools.length;
-			var angle = angleP*i;
-			var y = Math.sin(angle) * r_pools + width/2 ;
-			return f(y);
-		};
-
-		var label = function (d) {
-			return d.label;
-		}
 
 		////////////////////////////////////////
 		// Suppression des groupes non-utilisés.
@@ -89,7 +94,7 @@
 
 		groups.transition() // @todo How to slow the transition down.
 			.attr('transform', function (d, i) {
-				return ('translate('+ cx(d, i) +', '+ cy(d, i) +')');
+				return ('translate('+ pool_x(d, i) +', '+ pool_y(d, i) +')');
 			})
 			;
 
@@ -117,7 +122,7 @@
 			.duration(800)
 			.ease("elastic") // add an elastic effect when death.
 			.attr('transform', function (d, i) { // @todo How to slow the transition down.
-			return ('translate('+ cx(d, i) +', '+ cy(d, i) +')');
+			return ('translate('+ pool_x(d, i) +', '+ pool_y(d, i) +')');
 		});
 	}
 }();
