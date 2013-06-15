@@ -32,7 +32,30 @@
 			);
 		}))
 		;
+    // function when the mouse are on a pool  
+	var mouseover = function(d, i) {
+		d3.select(this)
+			.style('fill', d3.rgb(31, 120, 180));
+		svg
+			.append('rect')
+			.attr('class','info')
+			.attr('x',850)
+			.attr('y', 0)
+			.attr('width', 150 )
+			.attr('height',150 )
+			.attr('fill','white')
+			.attr('stroke', 'black')
+			
+	};
+	
+	// function when the mouse are not on a pool  	
+	var mouseout =  function(d, i) {
+		d3.select(this)
+			.style("fill", d3.rgb('green'));
+			svg.selectAll('rect').remove()
+			svg.selectAll('.infotxt').remove()
 
+    };	
 	// Abscisse des pools.
 	var pool_x = function (d, i) {
 		var angleP = 2 * Math.PI / pool_x.n;
@@ -103,18 +126,17 @@
 			.attr('fill', 'green')
 			.attr('r', 25)
 			.attr('stroke', 'gray')
+			.on("mouseout", mouseout)
+			.on("mouseover",mouseover)
 			;
 
 		// Texte.
 		groups.append('text')
 			.attr('text-anchor', 'left')
-			.attr('dx',25)
+			.attr('dx',25) 
 			.text(label)
 			;
-
-		////////////////////////////////////////
-		//Interaction.
-		// @todo Better alignment of circles and texts.
+			
 		////////////////////////////////////////
 		// Mise à jour des groupes existants.
 
