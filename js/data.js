@@ -15,17 +15,16 @@
 				{ 'label': 'Host 1' },
 				{ 'label': 'Host 2' },
 				{ 'label': 'Host 3' },
-				{ 'label': 'Host 4' },
 			]
 		};
 		pools.push(pool);
 
 		window.refresh(pools);
-	}, 1000);
+	}, 2000);
 
 	setInterval(function () {
 		pools.splice(_.random(pools.length - 1), 1);
 
 		window.refresh(pools);
-	}, 1500);
+	}, 2500);
 }();

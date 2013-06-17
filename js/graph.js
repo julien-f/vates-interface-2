@@ -54,8 +54,13 @@
 			.style("fill", d3.rgb('green'));
 			svg.selectAll('rect').remove()
 			svg.selectAll('.infotxt').remove()
+	};
 
-    };	
+	////////////////////////////////////////////////////////////////////////////////
+
+	//Pour les POOLS.
+	
+    	
 	// Abscisse des pools.
 	var pool_x = function (d, i) {
 		var angleP = 2 * Math.PI / pool_x.n;
@@ -65,7 +70,7 @@
 		return pool_x.helper(x);
 	};
 	pool_x.helper = d3.scale.linear()
-		.domain([0, 1000])
+		.domain([0, width])
 		.range([0, width])
 		;
 
@@ -76,18 +81,64 @@
 		var angle = angleP*i;
 		var y = Math.sin(angle) * r_pools + width/2 ;
 
-		return pool_x.helper(y);
+		return pool_y.helper(y);
 	};
 	pool_y.helper = d3.scale.linear()
-		.domain([0, 1000])
+		.domain([0, height])
 		.range([height, 0])
 		;
 
 	var label = function (d) {
 		return d.label;
-	}
+	};
+	
+	////////////////////////////////////////////////////////////////////////////////
+
+	//Pour les HOSTS.
+	
+   
+	// Abscisse des pools.
+	var hosts_x = function (d, i,j) {
+		var angleP = 2 * Math.PI /pool_x.n;
+		var angle = angleP*i;
+		var x =	Math.cos(angle) * r_pools + width/2;
+		
+				
+		var angleH = angleP/3 *i - angleP/2 + angleP*j;
+		x = Math.cos(angleH) * r_pools * 1.5 ;
+	
+		return hosts_x.helper(x);
+	};
+	
+	hosts_x.helper = d3.scale.linear()
+		.domain([0, width])
+		.range([0, width])
+		;
+	
+	// Ordonnée des pools.
+	var hosts_y = function (d, i,j) {
+
+		var angleP = 2 * Math.PI / pool_y.n;
+		var angle = angleP*i;
+		var y = Math.sin(angle) * r_pools + width/2 ;
+		
+		var angleH = angleP/3 *i - angleP/2 + angleP*j;
+		y = Math.cos(angleH) * r_pools * 1.5 ;
+
+		return hosts_y.helper(y);
+	};
+	
+	hosts_y.helper = d3.scale.linear()
+		.domain([0, width])
+		.range([0, width])
+		;
+	
 
 	window.refresh = function (pools) {
+	
+		////////////////////////////////////////////////////////////////////////////////
+		// Pour les POOLS.
+		
 		// d3.js selections.
 		var update = graph.selectAll('.pool').data(pools, function(d) { return d.label; });
 		var enter  = update.enter();
@@ -105,6 +156,8 @@
 			.attr("r", 5)
 			.remove()
 			;
+		
+		
 
 		////////////////////////////////////////
 		// Création des groupes manquants.
@@ -115,9 +168,9 @@
 			.attr('transform', 'translate('+ width/2 +', '+ height/2 +') scale(0.5)')
 			;
 
-		groups.transition() // @todo How to slow the transition down.
+		groups.transition()
 			.attr('transform', function (d, i) {
-				return ('translate('+ pool_x(d, i) +', '+ pool_y(d, i) +')');
+				return ('translate('+ pool_x(d, i) + ', '+ pool_y(d, i) + ')');
 			})
 			;
 
@@ -137,9 +190,69 @@
 			.text(label)
 			;
 			
-		////////////////////////////////////////
-		// Mise à jour des groupes existants.
+			
+		////////////////////////////////////////////////////////////////////////////////
+		// Pour les HOSTS.	
 
+		
+		// d3.js selections.
+		var update2 = graph.selectAll('.pool').selectAll('.hosts').data(pools, function(d) { return d.hosts.label; });
+		var enter2  = update2.enter();
+		var exit2   = update2.exit();
+
+
+		for (var j = 0 ; j < 3; ++j){
+		
+			////////////////////////////////////////
+			// Suppression des groupes non-utilisés.
+	
+			exit2.transition()
+				.duration(50)
+				.attr("r", 5)
+				.remove()
+				;
+				
+			////////////////////////////////////////
+			// Création des groupes manquants.
+	
+			// Groupe.
+			var hosts = enter2.append('g')
+				.attr('class', 'hosts')
+				.attr('transform', 'translate('+ width/2 +', '+ height/2 +') scale(0.5)')
+				;
+	
+			hosts.transition()
+				.attr('transform', function (d, i) {
+					return ('translate('+ hosts_x(d, i) +', '+ hosts_y(d, i) +')');
+				})
+				;
+	
+			// Cercle.
+			hosts.append('circle')
+				.attr('fill', 'blue')
+				.attr('r', 25)
+				.attr('stroke', 'gray')
+				;
+				
+			update2.transition()
+			.duration(800)
+			.ease("elastic") // add an elastic effect when death.
+			.attr('transform', function (d, i, j) { 
+			return ('translate('+ hosts_x(d, i) +', '+ hosts_y(d, i) +')');
+		});
+		
+		};
+			
+		////////////////////////////////////////////////////////////////////////////////
+		// Mise à jour des groupes existants.
+	
+		update2.transition()
+			.duration(800)
+			.ease("elastic") // add an elastic effect when death.
+			.attr('transform', function (d, i, j) { // @todo How to slow the transition down.
+			return ('translate('+ hosts_x(d, i) +', '+ hosts_y(d, i) +')');
+		});
+		
 		update.transition()
 			.duration(800)
 			.ease("elastic") // add an elastic effect when death.
