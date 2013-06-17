@@ -1,6 +1,9 @@
 !function () {
 	'use strict';
 
+	// Math constants.
+	var TWO_PI = 2 * Math.PI;
+
 	var height = 1000;
 	var width  = 1000;
 
@@ -20,7 +23,9 @@
 	;
 
 	// Everything will be contained in a group to apply transformations.
-	var graph = svg.append('g');
+	var graph = svg.append('g')
+		.attr('transform', 'translate('+ width/2 +','+ height/2 +')')
+	;
 
 	// Reacts to appropriate events.
 	svg
@@ -35,22 +40,28 @@
 
 	////////////////////////////////////////////////////////////////////////////////
 
+	/**
+	 * This generator returns a function which can be used to
+	 * calculate coordinates of points on a arc.
+	 *
+	 * @param {integer} n The number of points on the arc.
+	 * @param {number} r Radius of the arc.
+	 * @param {number} alpha Angle of the arc.
+	 * @param {number} beta Angle shift from the horizontal.
+	 *
+	 * @return {function(*, integer): Array.<number>} [description]
+	 */
 	var coordFunc = function (n, r, alpha, beta)
 	{
-		var helper = d3.scale.linear()
-			.domain([0, height])
-			.range([height, 0])
-		;
-
 		var angle = alpha / n;
-		console.log(n);
-
 
 		return function (d, i) {
-			var x =	Math.cos(angle * i) * r + width/2;
-			var y =	Math.sin(angle * i) * r + height/2;
+			var angle_i = angle * i + beta;
 
-			return [x, helper(y)];
+			return [
+				Math.cos(angle_i) * r,
+				Math.sin(angle_i) * r
+			];
 		};
 	};
 
@@ -99,10 +110,10 @@
 
 		// Sets position for all existing pools.
 		var f = coordFunc(
-			n,           // Number of pools.
-			r_pools,     // Radius of the “pool”-circle.
-			2 * Math.PI, // This is a circle so its angle is 2pi.
-			0            // No angle shift.
+			n,       // Number of pools.
+			r_pools, // Radius of the “pool”-circle.
+			TWO_PI,  // This is a circle so its angle is 2pi.
+			0        // No angle shift.
 		);
 		pools.attr('transform', function (pool, i) {
 			return ('translate('+ f(pool, i).join(',') +')');
