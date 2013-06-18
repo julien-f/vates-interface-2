@@ -71,12 +71,12 @@
 
 	////////////////////////////////////////////////////////////////////////////////
 
-	window.refresh = function (pools) {
+	window.refresh = function (data) {
 
-		var n = pools.length;
+		var n = data.length;
 
 		var pools = graph.selectAll('g.pool')
-			.data(pools, function (pool) {
+			.data(data, function (pool) {
 				return pool.label;
 			})
 		;
@@ -91,22 +91,6 @@
 		new_pools.append('circle')
 			.attr('r', 25)
 		;
-		var hosts = pools.selectAll('g.host').data(
-			function (pool) {
-				return pool.hosts;
-			},
-			function (host) {
-				return host.label;
-			}
-		);
-		hosts.enter().append('g')
-			.attr('class', 'host')
-			.append('circle')
-				.attr('r', 15)
-				.attr('cx', function (host, i, j) {
-					return 0;
-				})
-		;
 
 		// Sets position for all existing pools.
 		var f = coordFunc(
@@ -118,5 +102,64 @@
 		pools.attr('transform', function (pool, i) {
 			return ('translate('+ f(pool, i).join(',') +')');
 		});
+
+		////////////////////////////////////////////////////////////////////////////////
+		//Hosts
+
+		var hosts = pools.selectAll('g.host').data(
+			function (pool) {
+				return pool.hosts;
+			},
+			function (host) {
+				return host.label;
+			}
+		);
+
+		var new_hosts = hosts.enter().append('g')
+			.attr('class', 'host')
+		;
+
+		new_hosts.append('circle')
+				.attr('r', 15)
+		;
+
+		var fh = [];
+		for (var i = 0; i < n; i++)
+		{
+			// Sets position for all existing pools.
+			fh[i] = coordFunc(
+				data[i].hosts.length,       // Number of pools.
+				r_hosts, // Radius of the “pool”-circle.
+				TWO_PI/n,  // This is a circle so its angle is 2pi.
+				-TWO_PI/n/2 + TWO_PI/n*i   // No angle shift.
+			);
+		}
+
+		hosts.attr('transform', function (host, i, j) {
+			return ('translate('+ fh[j](host, i).join(',') +')');
+		});
+
+		var lines = pools.selectAll('line').data(
+			function (pool) {
+				return pool.hosts;
+			},
+			function (host) {
+				return host.label;
+			}
+		);
+
+		lines.exit().remove();
+		lines.enter().append('line')
+			.attr('stroke', 'black')
+		;
+
+		lines
+			.attr('x2', function (host, i, j) {
+				return fh[j](host, i)[0];
+			})
+			.attr('y2', function (host, i, j) {
+				return fh[j](host, i)[1];
+			})
+		;
 	};
 }();
